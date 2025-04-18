@@ -31,9 +31,6 @@ jobs:
         with:
           project_id: notely-457215
 
-      - name: Use gcloud CLI
-        run: gcloud info
-
       - name: Build and push Docker image
         run: gcloud builds submit --tag us-central1-docker.pkg.dev/notely-457215/notely-ar-repo/my-web-app:latest .
 
