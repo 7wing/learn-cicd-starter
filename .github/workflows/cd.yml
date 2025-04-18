@@ -20,3 +20,24 @@ jobs:
 
       - name: Build app
         run: ./scripts/buildprod.sh
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }} # You might need to add GCP_PROJECT_ID as a secret too, or hardcode it here
+
+      - name: Configure Docker for Artifact Registry
+        run: |-
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push Docker image to Artifact Registry
+        run: |-
+          REGION="us-central1"
+          PROJECT_ID="${{ secrets.GCP_PROJECT_ID }}" # Or replace with your actual project ID as a string
+          REPOSITORY="notely-ar-repo"
+          IMAGE_NAME="notely"
+          TAG="latest"
+
+          docker build -t "$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG" .
+          docker push "$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG"
