@@ -29,8 +29,9 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Use gcloud CLI
-        run: gcloud info
+      - name: Configure Docker for Artifact Registry
+        run: |-
+          gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: gcloud builds submit
         run: |-
@@ -40,5 +41,6 @@ jobs:
           IMAGE_NAME="notely"
           TAG="latest"
 
-          gcloud builds submit \
-            --tag "$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG" .
+          docker build -t "$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG" .
+          docker push "$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$TAG"
+          
